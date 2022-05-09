@@ -29,7 +29,7 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
         logging.StreamHandler(),
-    ]
+    ],
 )
 
 
@@ -45,6 +45,7 @@ table2dataclass = {
 @dataclass
 class UploadSettings:
     """Dataclass for settings."""
+
     localdb: os.PathLike = os.environ.get("DB_SQLITE")
     dbname: str = os.environ.get("DB_NAME")
     output_dbname: str = os.environ.get("DB_PREFIX")
@@ -108,10 +109,8 @@ def conn_context(dsl: UploadSettings) -> Iterator[Tuple[sqlite3.Row, _connection
 
 
 def iter_sqlite_db(
-    cursor: sqlite3.Cursor, 
-    table_name: str, 
-    batch_size: int
-    ) -> Iterator:
+    cursor: sqlite3.Cursor, table_name: str, batch_size: int
+) -> Iterator:
     """Iterate over sqllite db"""
     try:
         cursor.execute(f"SELECT * FROM {table_name};")
@@ -125,15 +124,15 @@ def iter_sqlite_db(
 
 
 def upload_table(
-        curs: sqlite3.Cursor,
-        pg_cur: psycopg2.extras.DictCursor,
-        model: dataclass,
-        table_name: str,
-        db_name: str,
-        batch_size: int,
-    ) -> NoReturn:
+    curs: sqlite3.Cursor,
+    pg_cur: psycopg2.extras.DictCursor,
+    model: dataclass,
+    table_name: str,
+    db_name: str,
+    batch_size: int,
+) -> NoReturn:
     """Upload data from sqlite3 to postgres database."""
-    
+
     fields_ = model.get_fields()
     col_names = SQL(", ").join(Identifier(name) for name in fields_)
     place_holders = SQL(", ").join(Placeholder() * len(fields_))
@@ -152,6 +151,7 @@ def upload_table(
         except Exception as err:
             handle_psycopg2_errors(err)
 
+
 def load_from_sqlite(dsl: UploadSettings) -> NoReturn:
     """Основной метод загрузки данных из SQLite в Postgres"""
 
@@ -162,7 +162,7 @@ def load_from_sqlite(dsl: UploadSettings) -> NoReturn:
             cur.execute("SELECT name FROM sqlite_master WHERE type='table';")
         except sqlite3.Error as err:
             handle_sqlite3_errors(err)
-	
+
         for i, item in enumerate(cur.fetchall()):
             table_name = item["name"]
             db_name = dsl.output_dbname

@@ -15,12 +15,8 @@
 ## ETL architecure
 
 - the singleton main process (entrypoint)
-- backoff consumer
-- backoff producer
-- state/storage
-
-```python
-state = State()
-state[key] = value
-value = state[key]
-```
+- backoffed consumer
+- backoffed producer
+- backoffed main
+- state/storage with Redis
+- one huge SQL with modified date for updated fields

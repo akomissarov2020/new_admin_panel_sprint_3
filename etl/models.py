@@ -25,7 +25,6 @@ class MovieModel(BaseModel):
     id: UUID
     imdb_rating: Optional[float]
     genre: Optional[List]
-    
 
     title: str
     description: Optional[str]
@@ -34,7 +33,7 @@ class MovieModel(BaseModel):
     actors: Optional[List]
     actors_names: Optional[List]
     writers_names: Optional[List]
-    
+
     writers: Optional[List]
 
     @validator("imdb_rating")

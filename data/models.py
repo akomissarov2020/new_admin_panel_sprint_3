@@ -12,7 +12,6 @@ from dataclasses import _MISSING_TYPE, dataclass, field, fields
 
 @dataclass
 class BaseImportDataclass:
-
     def __post_init__(self) -> None:
         """Replace None values with defaults"""
         for field in fields(self):
@@ -20,7 +19,7 @@ class BaseImportDataclass:
             if not isinstance(field.default, _MISSING_TYPE) and value is None:
                 setattr(self, field.name, field.default)
 
-    def test_the_same(self, item->BaseImportDataclass) -> None:
+    def test_the_same(self, item) -> None:
         """Test the same with given item."""
         for field in fields(self):
             value_a = getattr(self, field.name)

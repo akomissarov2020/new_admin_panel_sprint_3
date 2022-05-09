@@ -24,9 +24,7 @@ class SingletonError(Exception):
 
 @backoff_decorator
 def bulk_upload_to_es(es, data, index_name):
-    response = es.bulk(index=index_name, 
-                body=data,
-                refresh=True)
+    response = es.bulk(index=index_name, body=data, refresh=True)
     return response
 
 
@@ -45,28 +43,29 @@ def main(force=False):
 
     es = elasticsearch.Elasticsearch([config.es_address])
 
+    ### Singleton pattern by unique pid
+    mypid = os.getpid()
     if state.is_empty():
-        state.set("pid", os.getpid())
+        state.set("pid", mypid)
         status = create_index(es, config)
+        logger.info("last_bulk_extractor set to the default value")
+        state.set("last_bulk_extractor", "1900-01-01 01:00:00")
         if status["acknowledged"]:
             state.set("innitiated", 1)
     else:
-        pid = state.get("pid")
-        if pid and check_pid(pid):
+        pid = int(state.get("pid"))
+        if pid != mypid and check_pid(pid):
             raise SingletonError(f"Other process is running with pid={pid}")
         else:
             logger.info(f"Starting new process instead of pid={pid}")
             state.set("pid", os.getpid())
 
-    if not state.get("last_bulk_extractor"):
-        state.set("last_bulk_extractor", "1900-01-01 01:00:00")
-
     strings_to_es = []
     for row in bulk_extractor(config, state):
         data = MovieModel(**row)
         index_template = {
-           "index": {
-                "_index": "movies", 
+            "index": {
+                "_index": "movies",
                 "_id": str(data.id),
             }
         }
@@ -81,16 +80,17 @@ def main(force=False):
             "writers_names": data.writers_names,
             "actors": data.actors,
             "writers": data.writers,
-            }
+        }
         strings_to_es.append(index_template)
         strings_to_es.append(data_template)
 
     logger.info(f"Uploading {len(strings_to_es)/2} items to ES")
-    bulk_upload_to_es(es, strings_to_es, config.es_scheme)
+    if strings_to_es:
+        bulk_upload_to_es(es, strings_to_es, config.es_scheme)
     logger.info("Done.")
-        
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     while True:
-        main(force=True)
+        main(force=False)
         time.sleep(10)

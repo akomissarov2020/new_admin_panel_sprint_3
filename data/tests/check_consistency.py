@@ -19,13 +19,14 @@ from load_data import UploadSettings, conn_context, table2dataclass
 
 load_dotenv()
 
+
 def check_tables(
-        curs: sqlite3.Cursor,
-        pg_cur: psycopg2.extras.DictCursor,
-        model: dataclass,
-        table_name: str,
-        db_name: str,
-    ) -> NoReturn:
+    curs: sqlite3.Cursor,
+    pg_cur: psycopg2.extras.DictCursor,
+    model: dataclass,
+    table_name: str,
+    db_name: str,
+) -> NoReturn:
     """Check table consistency."""
     curs.execute("SELECT * FROM {table_name};".format(table_name=table_name))
     original_data = curs.fetchall()

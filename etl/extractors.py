@@ -39,7 +39,8 @@ def bulk_extractor(config, state):
     """Get all data from DB."""
     with conn_context(config) as conn:
         cursor = conn.cursor()
-        cursor.execute("""
+
+        query = """
         SELECT content.film_work.id,
         content.film_work.rating AS imdb_rating,
         ARRAY_AGG(DISTINCT content.genre.name) AS genre,
@@ -62,7 +63,13 @@ def bulk_extractor(config, state):
         LEFT OUTER JOIN content.person ON (content.person_film_work.person_id = content.person.id)
         WHERE greatest(content.film_work.modified, content.person.modified, content.genre.modified) > '%s'
         GROUP BY content.film_work.id, content.film_work.title, content.film_work.description, content.film_work.rating
-        """ % state.get("last_bulk_extractor"))
+        """ % state.get(
+            "last_bulk_extractor"
+        )
+
+        cursor.execute(query)
         rows = cursor.fetchall()
-        state.set("last_bulk_extractor", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S:"))
+        state.set(
+            "last_bulk_extractor", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        )
         return rows

@@ -8,9 +8,10 @@
 from storage import BaseStorage, JsonFileStorage
 from typing import Any, Optional
 
+
 class State:
     """
-    Класс для хранения состояния при работе с данными, 
+    Класс для хранения состояния при работе с данными,
     чтобы постоянно не перечитывать данные с начала.
     """
 
@@ -27,6 +28,7 @@ class State:
 
     def get(self, key: str) -> Any:
         """Получить состояние по определённому ключу"""
+        self.data = self.storage.retrieve_state()
         if key in self.data:
             return self.data[key]
         return None
@@ -35,7 +37,8 @@ class State:
         return len(self.data) == 0
 
     def __repr__(self):
-        return str(",".join([f"{k}: {v}" for k,v in self.data.items()]))
+        self.data = self.storage.retrieve_state()
+        return str(",".join([f"{k}: {v}" for k, v in self.data.items()]))
 
     def clear(self):
         self.data = {}

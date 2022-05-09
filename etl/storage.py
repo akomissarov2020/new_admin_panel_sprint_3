@@ -11,8 +11,8 @@ import json
 import os
 import redis
 
-class BaseStorage:
 
+class BaseStorage:
     @abc.abstractmethod
     def save_state(self, state: dict) -> None:
         """Сохранить состояние в постоянное хранилище"""
@@ -25,10 +25,9 @@ class BaseStorage:
 
 
 class JsonFileStorage(BaseStorage):
-    
     def __init__(self, file_path: Optional[str] = None):
         self.file_path = file_path
-        
+
     def save_state(self, state: dict) -> None:
         """Сохранить состояние в постоянное хранилище"""
         with open(self.file_path, "w") as fh:
@@ -43,9 +42,10 @@ class JsonFileStorage(BaseStorage):
 
 
 class RedisStorage(BaseStorage):
-
     def __init__(self, config):
-        self.redis_adapter = redis.Redis(**config.get_redis_dict())
+        self.redis_adapter = redis.Redis(
+            **config.get_redis_dict(), decode_responses=True
+        )
 
     def save_state(self, state: dict) -> None:
         """Сохранить состояние в постоянное хранилище"""

@@ -15,9 +15,11 @@ from typing import Iterator, NoReturn, Tuple
 
 load_dotenv()
 
+
 @dataclass
 class Settings:
     """Dataclass for settings."""
+
     localdb: os.PathLike = os.environ.get("DB_SQLITE")
     dbname: str = os.environ.get("DB_NAME")
     output_dbname: str = os.environ.get("DB_PREFIX")
@@ -27,13 +29,13 @@ class Settings:
     port: int = 5432
     batch_size: int = 100
 
-    es_scheme: str = os.getenv('ELASTIC_SCHEME')
-    es_address: str = os.getenv('ELASTIC_ADDRESS')
-    es_json_file:os.PathLike = os.environ.get("ELASTIC_JSON_FILE")
+    es_scheme: str = os.getenv("ELASTIC_SCHEME")
+    es_address: str = os.getenv("ELASTIC_ADDRESS")
+    es_json_file: os.PathLike = os.environ.get("ELASTIC_JSON_FILE")
 
-    redis_db: str = os.getenv('REDIS_DB')
-    redis_port: int = os.getenv('REDIS_PORT')
-    redis_host: str = os.getenv('REDIS_HOST')
+    redis_db: str = os.getenv("REDIS_DB")
+    redis_port: int = os.getenv("REDIS_PORT")
+    redis_host: str = os.getenv("REDIS_HOST")
 
     def get_psycopg_dict(self) -> dict:
         """Get subset of settings for psycopg connection."""
@@ -54,14 +56,14 @@ class Settings:
         }
 
 
-
 logging.basicConfig(
     level=logging.DEBUG,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
         logging.StreamHandler(),
-    ]
+    ],
 )
+
 
 def handle_errors(err: Exception) -> NoReturn:
     """Handle errors for sqlite3."""
@@ -72,13 +74,15 @@ def handle_errors(err: Exception) -> NoReturn:
     logging.error(traceback.format_exception(exc_type, exc_value, exc_tb))
     sys.exit(10)
 
-def check_pid(pid):        
-    """ Check For the existence of a unix pid. """
+
+def check_pid(pid):
+    """Check For the existence of a unix pid."""
     try:
         os.kill(pid, 0)
     except OSError:
         return False
     else:
         return True
+
 
 logger = logging.getLogger()

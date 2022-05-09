@@ -10,6 +10,7 @@ from backoff import backoff_decorator
 from config import Settings, logger
 import json
 
+
 @backoff_decorator
 def create_index(es, config):
     """Create index according to given json file"""
