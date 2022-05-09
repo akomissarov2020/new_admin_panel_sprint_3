@@ -20,7 +20,4 @@ while ! nc -z $ELASTIC_HOST $ELASTIC_PORT; do
 done
 echo "Elastic started"
 
-
-python manage.py collectstatic
-
 exec "$@"

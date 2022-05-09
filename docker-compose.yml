@@ -44,8 +44,6 @@ services:
     container_name: redis
     expose:
       - 6379
-    depends_on:
-      - web
   etl:
     build:
       context: ./etl
