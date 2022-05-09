@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    volumes:
+      - static_volume:/home/app/web/staticfiles
+      - media_volume:/home/app/web/mediafiles
+    env_file:
+      - ./.env
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres:13.0-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env
+    expose:
+      - 5432
+  nginx:
+    build: ./nginx
+    volumes:
+      - static_volume:/home/app/web/staticfiles
+      - media_volume:/home/app/web/mediafiles
+    ports:
+      - 80:80
+    depends_on:
+      - web
+  elasticsearch:
+    image: elasticsearch:7.7.0
+    container_name: elasticsearch
+    environment:
+        - discovery.type=single-node
+        - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - 9200:9200
+    depends_on:
+      - web
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - 6379:6379
+    depends_on:
+      - web
+  etl:
+    build:
+      context: ./etl
+      dockerfile: Dockerfile
+    dockerfile: Dockerfile
+    depends_on:
+      - postgres
+      - elasticsearch
+      - redis
+    env_file:
+      - ./.env
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
