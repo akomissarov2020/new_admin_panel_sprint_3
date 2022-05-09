@@ -30,27 +30,26 @@ services:
     depends_on:
       - web
   elasticsearch:
-    image: elasticsearch:7.7.0
+    image: elasticsearch:7.17.3
     container_name: elasticsearch
     environment:
         - discovery.type=single-node
         - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    ports:
-      - 9200:9200
+    expose:
+      - 9200
     depends_on:
       - web
   redis:
     image: redis
     container_name: redis
-    ports:
-      - 6379:6379
+    expose:
+      - 6379
     depends_on:
       - web
   etl:
     build:
       context: ./etl
       dockerfile: Dockerfile
-    dockerfile: Dockerfile
     depends_on:
       - postgres
       - elasticsearch
