@@ -112,7 +112,7 @@ def configuration(force: bool) -> tuple:
 
     return config, state, es
 
-
+@backoff_decorator
 def main(force=False) -> NoReturn:
     """The entrypoint function."""
     config, state, es = configuration(force)
