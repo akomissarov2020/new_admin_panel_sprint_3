@@ -74,7 +74,6 @@ def handle_errors(err: Exception) -> NoReturn:
     logger.error("Traceback: ")
     exc_type, exc_value, exc_tb = sys.exc_info()
     logger.error(traceback.format_exception(exc_type, exc_value, exc_tb))
-    sys.exit(10)
 
 
 def check_pid(pid: int) -> bool:
