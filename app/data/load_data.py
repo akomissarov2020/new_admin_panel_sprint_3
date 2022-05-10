@@ -21,7 +21,6 @@ from psycopg2.sql import SQL, Identifier, Placeholder
 
 from models import Filmwork, Genre, GenreFilmwork, Person, PersonFilmwork
 
-
 load_dotenv()
 
 logging.basicConfig(
@@ -49,10 +48,10 @@ class UploadSettings:
     localdb: os.PathLike = os.environ.get("DB_SQLITE")
     dbname: str = os.environ.get("DB_NAME")
     output_dbname: str = os.environ.get("DB_PREFIX")
-    user: str = os.environ.get("DB_USER")
-    password: str = os.environ.get("DB_PASSWORD")
-    host: str = "127.0.0.1"
-    port: int = 5432
+    user: str = os.environ.get("POSTGRES_USER")
+    password: str = os.environ.get("POSTGRES_PASSWORD")
+    host: str = os.environ.get("SQL_HOST")
+    port: int = os.environ.get("SQL_PORT")
     batch_size: int = 100
 
     def get_psycopg_dict(self) -> dict:
@@ -87,18 +86,19 @@ def handle_psycopg2_errors(err: Exception) -> NoReturn:
 
 
 @contextmanager
-def conn_context(dsl: UploadSettings) -> Iterator[Tuple[sqlite3.Row, _connection]]:
+def conn_context(settings: UploadSettings) -> Iterator[Tuple[sqlite3.Row, _connection]]:
     """Context manager that connect to both databases."""
     try:
-        conn = sqlite3.connect(dsl.localdb)
+        conn = sqlite3.connect(settings.localdb)
     except sqlite3.Error as err:
         handle_sqlite3_errors(err)
 
     conn.row_factory = sqlite3.Row
 
     pg_conn = None
+
     try:
-        pg_conn = psycopg2.connect(**dsl.get_psycopg_dict(), cursor_factory=DictCursor)
+        pg_conn = psycopg2.connect(**settings.get_psycopg_dict(), cursor_factory=DictCursor)
     except psycopg2.OperationalError as err:
         handle_psycopg2_errors(err)
 
@@ -152,10 +152,10 @@ def upload_table(
             handle_psycopg2_errors(err)
 
 
-def load_from_sqlite(dsl: UploadSettings) -> NoReturn:
+def load_from_sqlite(settings: UploadSettings) -> NoReturn:
     """Основной метод загрузки данных из SQLite в Postgres"""
 
-    with conn_context(dsl) as (conn, pg_conn):
+    with conn_context(settings) as (conn, pg_conn):
         cur = conn.cursor()
         pg_cur = pg_conn.cursor()
         try:
@@ -165,10 +165,12 @@ def load_from_sqlite(dsl: UploadSettings) -> NoReturn:
 
         for i, item in enumerate(cur.fetchall()):
             table_name = item["name"]
-            db_name = dsl.output_dbname
+            if not table_name in table2dataclass:
+                continue
+            db_name = settings.output_dbname
             logging.info(table_name)
             dataclass_ = table2dataclass[table_name]
-            upload_table(cur, pg_cur, dataclass_, table_name, db_name, dsl.batch_size)
+            upload_table(cur, pg_cur, dataclass_, table_name, db_name, settings.batch_size)
         try:
             pg_conn.commit()
         except Exception as err:
@@ -179,8 +181,8 @@ if __name__ == "__main__":
 
     logging.info("Starting data export...")
 
-    dsl = UploadSettings(
+    settings = UploadSettings(
         batch_size=100,
     )
 
-    load_from_sqlite(dsl)
+    load_from_sqlite(settings)

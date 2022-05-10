@@ -4,15 +4,18 @@
 # @author: Aleksey Komissarov
 # @contact: ad3002@gmail.com
 
+import json
 import os
+
 import elasticsearch
+from typing import Any
 from backoff import backoff_decorator
 from config import Settings, logger
-import json
+from dataclasses import dataclass
 
 
 @backoff_decorator
-def create_index(es, config):
+def create_index(es: Any, config: dataclass) -> dict:
     """Create index according to given json file"""
 
     json_file_name = config.es_json_file

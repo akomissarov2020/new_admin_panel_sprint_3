@@ -12,8 +12,9 @@ import datetime
 import uuid
 from dataclasses import _MISSING_TYPE, dataclass, field, fields
 from uuid import UUID
-from pydantic.schema import Optional, List
+
 from pydantic import BaseModel, validator
+from pydantic.schema import List, Optional
 
 
 class PersonModel(BaseModel):

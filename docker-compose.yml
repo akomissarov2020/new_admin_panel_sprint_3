@@ -13,11 +13,19 @@ services:
     depends_on:
       - postgres
   postgres:
-    image: postgres:13.0-alpine
+    build:
+      context: ./postgres
+      dockerfile: Dockerfile
     volumes:
       - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_PASSWORD: docker
+      POSTGRES_USER: docker
+      POSTGRES_DB: content
     env_file:
       - ./.env
+    ports:
+      - 5432:5432
     expose:
       - 5432
   nginx:
@@ -52,6 +60,7 @@ services:
       - postgres
       - elasticsearch
       - redis
+      - web
     env_file:
       - ./.env
 volumes:

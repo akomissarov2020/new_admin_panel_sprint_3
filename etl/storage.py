@@ -6,9 +6,10 @@
 """Permanent storage."""
 
 import abc
-from typing import Any, Optional
 import json
 import os
+from typing import Any, Optional, NoReturn
+
 import redis
 
 
@@ -42,7 +43,7 @@ class JsonFileStorage(BaseStorage):
 
 
 class RedisStorage(BaseStorage):
-    def __init__(self, config):
+    def __init__(self, config: Any) -> NoReturn:
         self.redis_adapter = redis.Redis(
             **config.get_redis_dict(), decode_responses=True
         )

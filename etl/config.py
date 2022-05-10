@@ -4,14 +4,14 @@
 # @author: Aleksey Komissarov
 # @contact: ad3002@gmail.com
 
+import logging
 import os
 import sys
 import traceback
-from dotenv import load_dotenv
-import logging
 from dataclasses import dataclass
 from typing import Iterator, NoReturn, Tuple
 
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -64,18 +64,19 @@ logging.basicConfig(
     ],
 )
 
+logger = logging.getLogger()
 
 def handle_errors(err: Exception) -> NoReturn:
     """Handle errors for sqlite3."""
-    logging.error("Error: %s" % (" ".join(err.args)))
-    logging.error("Exception class is: ", err.__class__)
-    logging.error("Traceback: ")
+    logger.error("Error: %s" % (" ".join(err.args)))
+    logger.error("Exception class is: ", err.__class__)
+    logger.error("Traceback: ")
     exc_type, exc_value, exc_tb = sys.exc_info()
-    logging.error(traceback.format_exception(exc_type, exc_value, exc_tb))
+    logger.error(traceback.format_exception(exc_type, exc_value, exc_tb))
     sys.exit(10)
 
 
-def check_pid(pid):
+def check_pid(pid: int) -> bool:
     """Check For the existence of a unix pid."""
     try:
         os.kill(pid, 0)
@@ -85,4 +86,4 @@ def check_pid(pid):
         return True
 
 
-logger = logging.getLogger()
+

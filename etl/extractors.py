@@ -4,27 +4,31 @@
 # @author: Aleksey Komissarov
 # @contact: ad3002@gmail.com
 
-import psycopg2
-from config import logger
-from backoff import backoff_decorator
-from typing import Iterator, NoReturn, Tuple
-from contextlib import contextmanager
 import datetime
+import sys
+import traceback
+from contextlib import contextmanager
+from typing import Iterator, NoReturn, Tuple, Any
+
+import psycopg2
 from psycopg2.extras import DictCursor
+
+from config import logger
+from dataclasses import dataclass
 
 
 def handle_psycopg2_errors(err: Exception) -> NoReturn:
     """Handle errors for psycopg2."""
-    logging.error("psycopg2 error: %s" % (" ".join(err.args)))
-    logging.error("Exception class is: ", err.__class__)
-    logging.error("psycopg2 traceback: ")
+    logger.error("psycopg2 error: %s" % (" ".join(err.args)))
+    logger.error("Exception class is: ", err.__class__)
+    logger.error("psycopg2 traceback: ")
     exc_type, exc_value, exc_tb = sys.exc_info()
-    logging.error(traceback.format_exception(exc_type, exc_value, exc_tb))
+    logger.error(traceback.format_exception(exc_type, exc_value, exc_tb))
     sys.exit(11)
 
 
 @contextmanager
-def conn_context(config):
+def conn_context(config: dataclass) -> Iterator:
     """Context manager that connect to both databases."""
     try:
         conn = psycopg2.connect(**config.get_psycopg_dict(), cursor_factory=DictCursor)
@@ -34,8 +38,7 @@ def conn_context(config):
     conn.close()
 
 
-@backoff_decorator
-def bulk_extractor(config, state):
+def iter_bulk_extractor(config: dataclass, state: Any) -> Iterator:
     """Get all data from DB."""
     with conn_context(config) as conn:
         cursor = conn.cursor()
@@ -68,8 +71,11 @@ def bulk_extractor(config, state):
         )
 
         cursor.execute(query)
-        rows = cursor.fetchall()
         state.set(
             "last_bulk_extractor", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         )
-        return rows
+        while True:
+            rows_batch = cursor.fetchmany(config.batch_size)
+            if not rows_batch:
+                break
+            yield rows_batch

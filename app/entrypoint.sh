@@ -8,5 +8,9 @@ done
 echo "PostgreSQL started"
 
 python manage.py collectstatic
+python manage.py migrate
+cd data
+python load_data.py
+cd ..
 
 exec "$@"
