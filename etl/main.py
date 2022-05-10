@@ -27,7 +27,7 @@ class SingletonError(Exception):
 @backoff_decorator
 def extractor(config, state) -> Iterator:
     """Extractor from source database."""
-    yield bulk_extractor(config, state)
+    yield from iter_bulk_extractor(config, state)
 
 
 def transformer(row: dict) -> list:
@@ -72,6 +72,7 @@ def get_instance(state, config) -> Any:
         state.set("last_bulk_extractor", "1900-01-01 01:00:00")
         if status["acknowledged"]:
             state.set("innitiated", 1)
+    return es
 
 
 def check_singleton(state: Any) -> NoReturn:
@@ -106,7 +107,6 @@ def configuration(force: bool) -> tuple:
 
     if force:
         state.clear()
-
     es = get_instance(state, config)
     logger.info(f"Current state: {state}")
 
@@ -123,6 +123,7 @@ def main(force=False) -> NoReturn:
         transformed_data = sum(map(transformer, row_bulk), [])
         logger.info(f"Uploading {len(transformed_data)/2} items to ES")
         if transformed_data:
+            print(transformed_data)
             loader(es, strings_to_es, config.es_scheme)
     logger.info("Done.")
 
