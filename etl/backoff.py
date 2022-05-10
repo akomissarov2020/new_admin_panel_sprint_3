@@ -6,10 +6,10 @@
 
 import logging
 import time
+from collections.abc import Callable
 from datetime import datetime
 from functools import wraps
 
-from collections.abc import Callable
 from config import handle_errors, logger
 
 
@@ -17,12 +17,9 @@ class BackoffFailException(Exception):
     pass
 
 
-def backoff_decorator(func: Callable, 
-                      initial=0.1, 
-                      factor=2, 
-                      max_timeout=3, 
-                      max_tries=10, 
-                      logger=logger) -> Callable:
+def backoff_decorator(
+    func: Callable, initial=0.1, factor=2, max_timeout=3, max_tries=10, logger=logger
+) -> Callable:
     """Backoff functional decorator."""
 
     @wraps(func)

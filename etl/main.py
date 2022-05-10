@@ -8,9 +8,9 @@ import datetime
 import os
 import sys
 import time
+from typing import Any, Iterator, NoReturn, Optional
 
 import elasticsearch
-from typing import Any, Optional, NoReturn, Iterator
 from backoff import backoff_decorator
 from config import Settings, check_pid, logger
 from extractors import iter_bulk_extractor
@@ -86,13 +86,20 @@ def check_singleton(state: Any) -> NoReturn:
             raise SingletonError(f"Other process is running with pid={pid}")
         else:
             logger.info(f"Starting new process instead of pid={pid}")
-            state.set("pid", os.getpid())   
+            state.set("pid", os.getpid())
+
+
+@backoff_decorator
+def get_storage() -> RedisStorage:
+    """Get storage."""
+    config = Settings()
+    storage = RedisStorage(config)
+    return storage
 
 
 def configuration(force: bool) -> tuple:
     """Configure ETL."""
-    config = Settings()
-    storage = RedisStorage(config)
+    storage = get_storage()
     state = State(storage)
 
     check_singleton(state, force)
@@ -104,16 +111,15 @@ def configuration(force: bool) -> tuple:
     logger.info(f"Current state: {state}")
 
     return config, state, es
-    
 
-@backoff_decorator
+
 def main(force=False) -> NoReturn:
     """The entrypoint function."""
     config, state, es = configuration(force)
-    
+
     datasource = extractor(config, state)
 
-    for row_bulk in extractor(config, state):        
+    for row_bulk in extractor(config, state):
         transformed_data = sum(map(transformer, row_bulk), [])
         logger.info(f"Uploading {len(transformed_data)/2} items to ES")
         if transformed_data:

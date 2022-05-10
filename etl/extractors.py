@@ -8,13 +8,12 @@ import datetime
 import sys
 import traceback
 from contextlib import contextmanager
-from typing import Iterator, NoReturn, Tuple, Any
+from dataclasses import dataclass
+from typing import Any, Iterator, NoReturn, Tuple
 
 import psycopg2
-from psycopg2.extras import DictCursor
-
 from config import logger
-from dataclasses import dataclass
+from psycopg2.extras import DictCursor
 
 
 def handle_psycopg2_errors(err: Exception) -> NoReturn:

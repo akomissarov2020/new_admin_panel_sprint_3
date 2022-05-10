@@ -8,7 +8,7 @@
 import abc
 import json
 import os
-from typing import Any, Optional, NoReturn
+from typing import Any, NoReturn, Optional
 
 import redis
 

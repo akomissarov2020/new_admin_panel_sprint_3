@@ -6,12 +6,12 @@
 
 import json
 import os
+from dataclasses import dataclass
+from typing import Any
 
 import elasticsearch
-from typing import Any
 from backoff import backoff_decorator
 from config import Settings, logger
-from dataclasses import dataclass
 
 
 @backoff_decorator

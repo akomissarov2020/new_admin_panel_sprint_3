@@ -5,7 +5,7 @@
 # @contact: ad3002@gmail.com
 """Loadind data from sqlite3 to postgres."""
 
-from typing import Iterator, NoReturn, Tuple, Any
+from typing import Any, Iterator, NoReturn, Tuple
 
 from storage import BaseStorage, JsonFileStorage
 

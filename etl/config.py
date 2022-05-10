@@ -66,10 +66,11 @@ logging.basicConfig(
 
 logger = logging.getLogger()
 
+
 def handle_errors(err: Exception) -> NoReturn:
     """Handle errors for sqlite3."""
     logger.error("Error: %s" % (" ".join(err.args)))
-    logger.error("Exception class is: ", err.__class__)
+    logger.error("Exception class is: %s" % err.__class__)
     logger.error("Traceback: ")
     exc_type, exc_value, exc_tb = sys.exc_info()
     logger.error(traceback.format_exception(exc_type, exc_value, exc_tb))
@@ -84,6 +85,3 @@ def check_pid(pid: int) -> bool:
         return False
     else:
         return True
-
-
-
