@@ -66,7 +66,7 @@ def get_instance(state, config) -> Any:
     """Get elastic search instance and init it of required."""
     es = elasticsearch.Elasticsearch([config.es_address])
 
-    if int(state.get("innitiated")) == 0:
+    if state.get("innitiated") != "1":
         status = create_index(es, config)
         logger.info("last_bulk_extractor set to the default value")
         state.set("last_bulk_extractor", "1900-01-01 01:00:00")
@@ -94,15 +94,15 @@ def get_storage() -> RedisStorage:
     """Get storage."""
     config = Settings()
     storage = RedisStorage(config)
-    return storage
+    return storage, config
 
 
 def configuration(force: bool) -> tuple:
     """Configure ETL."""
-    storage = get_storage()
+    storage, config = get_storage()
     state = State(storage)
 
-    check_singleton(state, force)
+    check_singleton(state)
 
     if force:
         state.clear()
