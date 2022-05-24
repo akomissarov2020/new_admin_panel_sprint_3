@@ -18,8 +18,25 @@ from pydantic.schema import List, Optional
 
 
 class PersonModel(BaseModel):
-    id: str
+    id: UUID
+    full_name: str
+    is_actor: bool = 0
+    is_director: bool = 0
+    is_writer: bool = 0
+
+
+class GenreModel(BaseModel):
+
+    id: UUID
     name: str
+    description: Optional[str]
+
+    @validator("description")
+    def valid_description(cls, value):
+        if value is None:
+            return ""
+        return value
+
 
 
 class MovieModel(BaseModel):

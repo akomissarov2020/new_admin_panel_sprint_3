@@ -37,44 +37,22 @@ def conn_context(config: dataclass) -> Iterator:
     conn.close()
 
 
-def iter_bulk_extractor(config: dataclass, state: Any) -> Iterator:
+def iter_bulk_extractor(name: str, config: Any, query: str, batch_size: int, state: Any) -> Iterator:
     """Get all data from DB."""
+    print("Connection...")
     with conn_context(config) as conn:
-        cursor = conn.cursor()
 
-        query = """
-        SELECT content.film_work.id,
-        content.film_work.rating AS imdb_rating,
-        ARRAY_AGG(DISTINCT content.genre.name) AS genre,
-        content.film_work.title,
-        content.film_work.description,
-        ARRAY_AGG(DISTINCT content.person.full_name)
-        FILTER(WHERE content.person_film_work.role = 'director') AS director,
-        ARRAY_AGG(DISTINCT content.person.full_name)
-        FILTER(WHERE content.person_film_work.role = 'actor') AS actors_names,
-        ARRAY_AGG(DISTINCT content.person.full_name)
-        FILTER(WHERE content.person_film_work.role = 'writer') AS writers_names,
-        JSON_AGG(DISTINCT jsonb_build_object('id', content.person.id, 'name', content.person.full_name))
-        FILTER(WHERE content.person_film_work.role = 'actor') AS actors,
-        JSON_AGG(DISTINCT jsonb_build_object('id', content.person.id, 'name', content.person.full_name))
-        FILTER(WHERE content.person_film_work.role = 'writer') AS writers
-        FROM content.film_work
-        LEFT OUTER JOIN content.genre_film_work ON (content.film_work.id = content.genre_film_work.film_work_id)
-        LEFT OUTER JOIN content.genre ON (content.genre_film_work.genre_id = content.genre.id)
-        LEFT OUTER JOIN content.person_film_work ON (content.film_work.id = content.person_film_work.film_work_id)
-        LEFT OUTER JOIN content.person ON (content.person_film_work.person_id = content.person.id)
-        WHERE greatest(content.film_work.modified, content.person.modified, content.genre.modified) > '%s'
-        GROUP BY content.film_work.id, content.film_work.title, content.film_work.description, content.film_work.rating
-        """ % state.get(
-            "last_bulk_extractor"
+        cursor = conn.cursor()
+        query = query % state.get(
+            f"last_bulk_extractor_{name}"
         )
 
         cursor.execute(query)
         state.set(
-            "last_bulk_extractor", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            f"last_bulk_extractor_{name}", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         )
         while True:
-            rows_batch = cursor.fetchmany(config.batch_size)
+            rows_batch = cursor.fetchmany(batch_size)
             if not rows_batch:
                 break
             yield rows_batch

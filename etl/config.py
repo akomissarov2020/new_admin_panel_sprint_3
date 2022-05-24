@@ -29,9 +29,16 @@ class Settings:
     port: int = 5432
     batch_size: int = 100
 
-    es_scheme: str = os.getenv("ELASTIC_SCHEME")
     es_address: str = os.getenv("ELASTIC_ADDRESS")
-    es_json_file: os.PathLike = os.environ.get("ELASTIC_JSON_FILE")
+    
+    es_scheme_films: str = os.getenv("ELASTIC_SCHEME_FILMS")
+    es_json_file_films: os.PathLike = os.environ.get("ELASTIC_JSON_FILE_FILMS")
+
+    es_scheme_persons: str = os.getenv("ELASTIC_SCHEME_PERSONS")
+    es_json_file_persons: os.PathLike = os.environ.get("ELASTIC_JSON_FILE_PERSONS")
+    
+    es_scheme_genres: str = os.getenv("ELASTIC_SCHEME_GENRES")
+    es_json_file_genres: os.PathLike = os.environ.get("ELASTIC_JSON_FILE_GENRES")
 
     redis_db: str = os.getenv("REDIS_DB")
     redis_port: int = os.getenv("REDIS_PORT")

@@ -15,16 +15,15 @@ from config import Settings, logger
 
 
 @backoff_decorator
-def create_index(es: Any, config: dataclass) -> dict:
+def create_index(es: Any, json_file_name: str, index_name: str) -> dict:
     """Create index according to given json file"""
 
-    json_file_name = config.es_json_file
-    index_name = config.es_scheme
     if es.indices.exists([index_name]):
         logger.info(f"Deleting existing index ({index_name}) in ES")
         es.indices.delete(index=index_name, ignore=[400, 404])
 
     with open(json_file_name) as fh:
+        print(json_file_name)
         data = json.load(fh)
 
     logger.info(f"Creating index ({index_name}) in ES")
