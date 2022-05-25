@@ -23,7 +23,6 @@ def create_index(es: Any, json_file_name: str, index_name: str) -> dict:
         es.indices.delete(index=index_name, ignore=[400, 404])
 
     with open(json_file_name) as fh:
-        print(json_file_name)
         data = json.load(fh)
 
     logger.info(f"Creating index ({index_name}) in ES")

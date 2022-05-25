@@ -25,8 +25,8 @@ class Settings:
     output_dbname: str = os.environ.get("DB_PREFIX")
     user: str = os.environ.get("DB_USER")
     password: str = os.environ.get("DB_PASSWORD")
-    host: str = "127.0.0.1"
-    port: int = 5432
+    host: str = os.environ.get("SQL_HOST", "127.0.0.1")
+    port: int = os.environ.get("SQL_PORT", 5432)
     batch_size: int = 100
 
     es_address: str = os.getenv("ELASTIC_ADDRESS")

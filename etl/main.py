@@ -110,7 +110,7 @@ def configuration(force: bool) -> tuple:
     if force:
         state.clear()
     es = get_instance(state, config)
-    logger.info(f"Current state: {state}")
+    # logger.info(f"Current state: {state}")
 
     return config, state, es
 
@@ -124,7 +124,6 @@ def main(force=False) -> NoReturn:
         transformed_data = sum(map(transformer_genres, row_bulk), [])
         # logger.info(f"Uploading {len(transformed_data)/2} items to ES")
         if transformed_data:
-            # print(transformed_data)
             loader_data_to_es(es, transformed_data, config.es_scheme_genres)
             total += len(transformed_data)/2
     
@@ -136,7 +135,6 @@ def main(force=False) -> NoReturn:
         transformed_data = sum(map(transformer_persons, row_bulk), [])
         # logger.info(f"Uploading {len(transformed_data)/2} items to ES")
         if transformed_data:
-            # print(transformed_data)
             loader_data_to_es(es, transformed_data, config.es_scheme_persons)
             total += len(transformed_data)/2
     
@@ -148,14 +146,12 @@ def main(force=False) -> NoReturn:
         transformed_data = sum(map(transformer_films, row_bulk), [])
         # logger.info(f"Uploading {len(transformed_data)/2} items to ES")
         if transformed_data:
-            # print(transformed_data)
             loader_data_to_es(es, transformed_data, config.es_scheme_films)
             total += len(transformed_data)/2
 
         transformed_data = sum(map(transformer_people_roles, row_bulk), [])
-        logger.info(f"Uploading {len(transformed_data)/2} items to ES")
+        # logger.info(f"Uploading {len(transformed_data)/2} items to ES")
         if transformed_data:
-            print(transformed_data)
             loader_data_to_es(es, transformed_data, config.es_scheme_persons)
             total_people += len(transformed_data)/2
 
