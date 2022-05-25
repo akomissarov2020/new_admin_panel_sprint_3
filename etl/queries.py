@@ -11,7 +11,7 @@ query_films = """
         content.film_work.title,
         content.film_work.description,
         ARRAY_AGG(DISTINCT content.person.full_name)
-        FILTER(WHERE content.person_film_work.role = 'director') AS director,
+        FILTER(WHERE content.person_film_work.role = 'director') AS directors_names,
         ARRAY_AGG(DISTINCT content.person.full_name)
         FILTER(WHERE content.person_film_work.role = 'actor') AS actors_names,
         ARRAY_AGG(DISTINCT content.person.full_name)
@@ -19,7 +19,9 @@ query_films = """
         JSON_AGG(DISTINCT jsonb_build_object('id', content.person.id, 'name', content.person.full_name))
         FILTER(WHERE content.person_film_work.role = 'actor') AS actors,
         JSON_AGG(DISTINCT jsonb_build_object('id', content.person.id, 'name', content.person.full_name))
-        FILTER(WHERE content.person_film_work.role = 'writer') AS writers
+        FILTER(WHERE content.person_film_work.role = 'writer') AS writers,
+        JSON_AGG(DISTINCT jsonb_build_object('id', content.person.id, 'name', content.person.full_name))
+        FILTER(WHERE content.person_film_work.role = 'director') AS directors_names
         FROM content.film_work
         LEFT OUTER JOIN content.genre_film_work ON (content.film_work.id = content.genre_film_work.film_work_id)
         LEFT OUTER JOIN content.genre ON (content.genre_film_work.genre_id = content.genre.id)

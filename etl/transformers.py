@@ -26,7 +26,8 @@ def transformer_films(row: dict) -> list:
         "genres": data.genres,
         "title": data.title,
         "description": data.description,
-        "director": data.director,
+        "directors": data.directors,
+        "directors_names": data.directors_names,
         "actors_names": data.actors_names,
         "writers_names": data.writers_names,
         "actors": data.actors,
@@ -69,3 +70,52 @@ def transformer_persons(row: dict) -> list:
         "is_writer": False,
     }
     return [index_template, data_template]
+
+
+def transformer_people_roles(row: dict) -> list:
+    """Data transformer from film to people roles."""
+    data = MovieModel(**row)
+    result = []
+    for (_id, full_name) in data.actors:
+        index_template = {
+            "update": {
+                "_index": settings.es_scheme_persons,
+                "_id": str(_id),
+            }
+        }
+        data_template = {
+            "doc" : {
+                "is_actor": True,
+            }
+        }
+        result.append(index_template)
+        result.append(data_template)
+    for (_id, full_name) in data.writers:
+        index_template = {
+            "update": {
+                "_index": settings.es_scheme_persons,
+                "_id": str(_id),
+            }
+        }
+        data_template = {
+            "doc" : {
+                "is_writer": True,
+            }
+        }
+        result.append(index_template)
+        result.append(data_template)
+    for (_id, full_name) in data.directors:
+        index_template = {
+            "update": {
+                "_index": settings.es_scheme_persons,
+                "_id": str(_id),
+            }
+        }
+        data_template = {
+            "doc" : {
+                "is_director": True,
+            }
+        }
+        result.append(index_template)
+        result.append(data_template)
+    return result

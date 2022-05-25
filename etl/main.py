@@ -20,6 +20,7 @@ from storage import RedisStorage
 from transformers import transformer_films
 from transformers import transformer_persons
 from transformers import transformer_genres
+from transformers import transformer_people_roles
 from queries import query_films, query_genres, query_persons
 
 class SingletonError(Exception):
@@ -121,36 +122,46 @@ def main(force=False) -> NoReturn:
     total = 0
     for row_bulk in extractor_genres(config, state):
         transformed_data = sum(map(transformer_genres, row_bulk), [])
-        logger.info(f"Uploading {len(transformed_data)/2} items to ES")
+        # logger.info(f"Uploading {len(transformed_data)/2} items to ES")
         if transformed_data:
-            print(transformed_data)
+            # print(transformed_data)
             loader_data_to_es(es, transformed_data, config.es_scheme_genres)
             total += len(transformed_data)/2
     
     logger.info(f"Done with genres. ({total})")
 
-    total = 0
-    for row_bulk in extractor_films(config, state):
-        transformed_data = sum(map(transformer_films, row_bulk), [])
-        logger.info(f"Uploading {len(transformed_data)/2} items to ES")
-        if transformed_data:
-            print(transformed_data)
-            loader_data_to_es(es, transformed_data, config.es_scheme_films)
-            total += len(transformed_data)/2
-
-    logger.info(f"Done with films: ({total})")
-
 
     total = 0
     for row_bulk in extractor_persons(config, state):
         transformed_data = sum(map(transformer_persons, row_bulk), [])
-        logger.info(f"Uploading {len(transformed_data)/2} items to ES")
+        # logger.info(f"Uploading {len(transformed_data)/2} items to ES")
         if transformed_data:
-            print(transformed_data)
+            # print(transformed_data)
             loader_data_to_es(es, transformed_data, config.es_scheme_persons)
             total += len(transformed_data)/2
     
     logger.info(f"Done with persons: ({total})")
+
+    total = 0
+    total_people = 0
+    for row_bulk in extractor_films(config, state):
+        transformed_data = sum(map(transformer_films, row_bulk), [])
+        # logger.info(f"Uploading {len(transformed_data)/2} items to ES")
+        if transformed_data:
+            # print(transformed_data)
+            loader_data_to_es(es, transformed_data, config.es_scheme_films)
+            total += len(transformed_data)/2
+
+        transformed_data = sum(map(transformer_people_roles, row_bulk), [])
+        logger.info(f"Uploading {len(transformed_data)/2} items to ES")
+        if transformed_data:
+            # print(transformed_data)
+            loader_data_to_es(es, transformed_data, config.es_scheme_persons)
+            total_people += len(transformed_data)/2
+
+
+    logger.info(f"Done with films: ({total})")
+    logger.info(f"Done with people roles: ({total_people})")    
 
 
 

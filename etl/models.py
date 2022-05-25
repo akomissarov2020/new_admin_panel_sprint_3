@@ -47,12 +47,13 @@ class MovieModel(BaseModel):
     title: str
     description: Optional[str]
 
-    director: Optional[List]
-    actors: Optional[List]
-    actors_names: Optional[List]
-    writers_names: Optional[List]
+    directors: Optional[List] = []
+    directors_names: Optional[List] = []
+    actors: Optional[List] = []
+    actors_names: Optional[List] = []
+    writers_names: Optional[List] = []
 
-    writers: Optional[List]
+    writers: Optional[List] = []
 
     @validator("imdb_rating")
     def valid_imdb_rating(cls, value):
@@ -72,8 +73,8 @@ class MovieModel(BaseModel):
             return []
         return value
 
-    @validator("director")
-    def valid_director(cls, value):
+    @validator("directors")
+    def valid_directors(cls, value):
         if value is None:
             return []
         return value
