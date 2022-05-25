@@ -76,11 +76,11 @@ def transformer_people_roles(row: dict) -> list:
     """Data transformer from film to people roles."""
     data = MovieModel(**row)
     result = []
-    for (_id, full_name) in data.actors:
+    for someone in data.actors:
         index_template = {
             "update": {
                 "_index": settings.es_scheme_persons,
-                "_id": str(_id),
+                "_id": str(someone["id"]),
             }
         }
         data_template = {
@@ -90,11 +90,11 @@ def transformer_people_roles(row: dict) -> list:
         }
         result.append(index_template)
         result.append(data_template)
-    for (_id, full_name) in data.writers:
+    for someone in data.writers:
         index_template = {
             "update": {
                 "_index": settings.es_scheme_persons,
-                "_id": str(_id),
+                "_id": str(someone["id"]),
             }
         }
         data_template = {
@@ -104,11 +104,11 @@ def transformer_people_roles(row: dict) -> list:
         }
         result.append(index_template)
         result.append(data_template)
-    for (_id, full_name) in data.directors:
+    for someone in data.directors:
         index_template = {
             "update": {
                 "_index": settings.es_scheme_persons,
-                "_id": str(_id),
+                "_id": str(someone["id"]),
             }
         }
         data_template = {
