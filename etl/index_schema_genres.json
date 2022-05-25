@@ -34,10 +34,12 @@
             "name": {
                 "type": "text",
                 "analyzer": "ru_en",
+                "fielddata": true,
                 "fields": {"raw": {"type": "keyword"}}
             },
             "description": {
                 "type": "text",
+                "fielddata": true,
                 "analyzer": "ru_en",
                 "fields": {"raw": {"type": "keyword"}}
             }

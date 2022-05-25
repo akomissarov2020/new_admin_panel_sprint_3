@@ -33,6 +33,7 @@
             "id": {"type": "keyword"},
             "full_name": {
                 "type": "text",
+                "fielddata": true,
                 "analyzer": "ru_en",
                 "fields": {"raw": {"type": "keyword"}}
             },

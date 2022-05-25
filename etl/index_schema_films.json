@@ -35,6 +35,7 @@
             "genres": {"type": "keyword"},
             "title": {
                 "type": "text",
+                "fielddata": true,
                 "analyzer": "ru_en",
                 "fields": {"raw": {"type": "keyword"}}
             },
