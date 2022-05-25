@@ -10,5 +10,5 @@ for ind in indexes:
 item = es.search(index="movies")
 print(item["hits"])
 	
-# print(es.get(id="cd19b384-babd-4b0c-ba0a-5c272bcf0238", index="movies"))
+print(es.get(id="5c4ed86e-021e-44ef-b899-5db849ed343f", index="movies"))
 

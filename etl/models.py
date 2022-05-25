@@ -79,6 +79,12 @@ class MovieModel(BaseModel):
             return []
         return value
 
+    @validator("directors_names")
+    def valid_directors_names(cls, value):
+        if value is None:
+            return []
+        return value
+
     @validator("writers")
     def valid_writers(cls, value):
         if value is None:
