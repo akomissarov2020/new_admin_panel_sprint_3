@@ -7,7 +7,7 @@
 query_films = """
         SELECT content.film_work.id,
         content.film_work.rating AS imdb_rating,
-        ARRAY_AGG(DISTINCT content.genre.name) AS genre,
+        ARRAY_AGG(DISTINCT content.genre.name) AS genres,
         content.film_work.title,
         content.film_work.description,
         ARRAY_AGG(DISTINCT content.person.full_name)
