@@ -64,8 +64,8 @@ def transformer_persons(row: dict) -> list:
     data_template = {
         "id": str(data.id),
         "full_name": data.full_name,
-        "is_actor": 0,
-        "is_director": 0,
-        "is_writer": 0,
+        "is_actor": False,
+        "is_director": False,
+        "is_writer": False,
     }
     return [index_template, data_template]

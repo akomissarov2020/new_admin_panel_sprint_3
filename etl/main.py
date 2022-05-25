@@ -130,6 +130,18 @@ def main(force=False) -> NoReturn:
     logger.info(f"Done with genres. ({total})")
 
     total = 0
+    for row_bulk in extractor_films(config, state):
+        transformed_data = sum(map(transformer_films, row_bulk), [])
+        logger.info(f"Uploading {len(transformed_data)/2} items to ES")
+        if transformed_data:
+            print(transformed_data)
+            loader_data_to_es(es, transformed_data, config.es_scheme_films)
+            total += len(transformed_data)/2
+
+    logger.info(f"Done with films: ({total})")
+
+
+    total = 0
     for row_bulk in extractor_persons(config, state):
         transformed_data = sum(map(transformer_persons, row_bulk), [])
         logger.info(f"Uploading {len(transformed_data)/2} items to ES")
@@ -140,16 +152,6 @@ def main(force=False) -> NoReturn:
     
     logger.info(f"Done with persons: ({total})")
 
-    total = 0
-    for row_bulk in extractor_films(config, state):
-        transformed_data = sum(map(transformer_films, row_bulk), [])
-        logger.info(f"Uploading {len(transformed_data)/2} items to ES")
-        if transformed_data:
-            print(transformed_data)
-            loader_data_to_es(es, transformed_data, config.es_scheme_films)
-            total += len(transformed_data)/2
-
-    logger.info(f"Done with films: ({total})")
 
 
 if __name__ == "__main__":

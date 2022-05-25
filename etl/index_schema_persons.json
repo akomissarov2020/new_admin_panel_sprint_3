@@ -31,7 +31,11 @@
         "dynamic": "strict",
         "properties": {
             "id": {"type": "keyword"},
-            "full_name": {"type": "text", "analyzer": "ru_en"},
+            "full_name": {
+                "type": "text",
+                "analyzer": "ru_en",
+                "fields": {"raw": {"type": "keyword"}}
+            },
             "is_actor": {"type": "boolean"},
             "is_director": {"type": "boolean"},
             "is_writer": {"type": "boolean"}

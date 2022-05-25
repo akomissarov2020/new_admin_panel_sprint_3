@@ -20,9 +20,9 @@ from pydantic.schema import List, Optional
 class PersonModel(BaseModel):
     id: UUID
     full_name: str
-    is_actor: bool = 0
-    is_director: bool = 0
-    is_writer: bool = 0
+    is_actor: bool = False
+    is_director: bool = False
+    is_writer: bool = False
 
 
 class GenreModel(BaseModel):

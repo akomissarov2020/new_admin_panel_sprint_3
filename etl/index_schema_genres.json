@@ -31,8 +31,16 @@
         "dynamic": "strict",
         "properties": {
             "id": {"type": "keyword"},
-            "name": {"type": "text", "analyzer": "ru_en"},
-            "description": {"type": "text", "analyzer": "ru_en"}
+            "name": {
+                "type": "text",
+                "analyzer": "ru_en",
+                "fields": {"raw": {"type": "keyword"}}
+            },
+            "description": {
+                "type": "text",
+                "analyzer": "ru_en",
+                "fields": {"raw": {"type": "keyword"}}
+            }
         }
     }
 }
