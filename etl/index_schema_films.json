@@ -32,7 +32,7 @@
         "properties": {
             "id": {"type": "keyword"},
             "imdb_rating": {"type": "float"},
-            "genre": {"type": "keyword"},
+            "genres": {"type": "keyword"},
             "title": {
                 "type": "text",
                 "analyzer": "ru_en",

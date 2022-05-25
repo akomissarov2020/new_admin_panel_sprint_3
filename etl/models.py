@@ -42,7 +42,7 @@ class GenreModel(BaseModel):
 class MovieModel(BaseModel):
     id: UUID
     imdb_rating: Optional[float]
-    genre: Optional[List]
+    genres: Optional[List]
 
     title: str
     description: Optional[str]
@@ -92,6 +92,12 @@ class MovieModel(BaseModel):
 
     @validator("writers_names")
     def valid_writers_names(cls, value):
+        if value is None:
+            return []
+        return value
+
+    @validator("genres")
+    def valid_genres(cls, value):
         if value is None:
             return []
         return value

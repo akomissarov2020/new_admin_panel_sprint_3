@@ -23,7 +23,7 @@ def transformer_films(row: dict) -> list:
     data_template = {
         "id": str(data.id),
         "imdb_rating": data.imdb_rating,
-        "genre": data.genre,
+        "genres": data.genres,
         "title": data.title,
         "description": data.description,
         "director": data.director,
