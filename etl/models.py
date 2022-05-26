@@ -38,7 +38,6 @@ class GenreModel(BaseModel):
         return value
 
 
-
 class MovieModel(BaseModel):
     id: UUID
     imdb_rating: Optional[float]

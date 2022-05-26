@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from typing import Any
 
 import elasticsearch
+
 from backoff import backoff_decorator
 from config import Settings, logger
 

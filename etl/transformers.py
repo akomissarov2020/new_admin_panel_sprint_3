@@ -4,12 +4,11 @@
 # @author: Aleksey Komissarov
 # @contact: ad3002@gmail.com
 
-from models import MovieModel
-from models import PersonModel
-from models import GenreModel
 from config import Settings
+from models import GenreModel, MovieModel, PersonModel
 
 settings = Settings()
+
 
 def transformer_films(row: dict) -> list:
     """Data transformer."""
@@ -84,7 +83,7 @@ def transformer_people_roles(row: dict) -> list:
             }
         }
         data_template = {
-            "doc" : {
+            "doc": {
                 "is_actor": True,
             }
         }
@@ -98,7 +97,7 @@ def transformer_people_roles(row: dict) -> list:
             }
         }
         data_template = {
-            "doc" : {
+            "doc": {
                 "is_writer": True,
             }
         }
@@ -112,7 +111,7 @@ def transformer_people_roles(row: dict) -> list:
             }
         }
         data_template = {
-            "doc" : {
+            "doc": {
                 "is_director": True,
             }
         }

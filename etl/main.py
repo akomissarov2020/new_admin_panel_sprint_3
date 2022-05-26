@@ -11,17 +11,17 @@ import time
 from typing import Any, Iterator, NoReturn, Optional
 
 import elasticsearch
+
 from backoff import backoff_decorator
 from config import Settings, check_pid, logger
 from extractors import iter_bulk_extractor
 from initiation import create_index
+from queries import query_films, query_genres, query_persons
 from state import State
 from storage import RedisStorage
-from transformers import transformer_films
-from transformers import transformer_persons
-from transformers import transformer_genres
-from transformers import transformer_people_roles
-from queries import query_films, query_genres, query_persons
+from transformers import (transformer_films, transformer_genres,
+                          transformer_people_roles, transformer_persons)
+
 
 class SingletonError(Exception):
     pass
@@ -30,17 +30,25 @@ class SingletonError(Exception):
 @backoff_decorator
 def extractor_films(config, state) -> Iterator:
     """Extractor from source database."""
-    yield from iter_bulk_extractor("films", config, query_films, config.batch_size, state)
+    yield from iter_bulk_extractor(
+        "films", config, query_films, config.batch_size, state
+    )
+
 
 @backoff_decorator
 def extractor_genres(config, state) -> Iterator:
     """Extractor from source database."""
-    yield from iter_bulk_extractor("genres", config, query_genres, config.batch_size, state)
+    yield from iter_bulk_extractor(
+        "genres", config, query_genres, config.batch_size, state
+    )
+
 
 @backoff_decorator
 def extractor_persons(config, state) -> Iterator:
     """Extractor from source database."""
-    yield from iter_bulk_extractor("persons", config, query_persons, config.batch_size, state)
+    yield from iter_bulk_extractor(
+        "persons", config, query_persons, config.batch_size, state
+    )
 
 
 @backoff_decorator
@@ -81,7 +89,7 @@ def check_singleton(state: Any) -> NoReturn:
     """Check that app is singleton."""
 
     mypid = os.getpid()
-    if state.is_empty() or not state.get("pid") :
+    if state.is_empty() or not state.get("pid"):
         state.set("pid", mypid)
     else:
         pid = int(state.get("pid"))
@@ -114,6 +122,7 @@ def configuration(force: bool) -> tuple:
 
     return config, state, es
 
+
 @backoff_decorator
 def main(force=False) -> NoReturn:
     """The entrypoint function."""
@@ -125,10 +134,9 @@ def main(force=False) -> NoReturn:
         # logger.info(f"Uploading {len(transformed_data)/2} items to ES")
         if transformed_data:
             loader_data_to_es(es, transformed_data, config.es_scheme_genres)
-            total += len(transformed_data)/2
-    
-    logger.info(f"Done with genres. ({total})")
+            total += len(transformed_data) / 2
 
+    logger.info(f"Done with genres. ({total})")
 
     total = 0
     for row_bulk in extractor_persons(config, state):
@@ -136,8 +144,8 @@ def main(force=False) -> NoReturn:
         # logger.info(f"Uploading {len(transformed_data)/2} items to ES")
         if transformed_data:
             loader_data_to_es(es, transformed_data, config.es_scheme_persons)
-            total += len(transformed_data)/2
-    
+            total += len(transformed_data) / 2
+
     logger.info(f"Done with persons: ({total})")
 
     total = 0
@@ -147,18 +155,16 @@ def main(force=False) -> NoReturn:
         # logger.info(f"Uploading {len(transformed_data)/2} items to ES")
         if transformed_data:
             loader_data_to_es(es, transformed_data, config.es_scheme_films)
-            total += len(transformed_data)/2
+            total += len(transformed_data) / 2
 
         transformed_data = sum(map(transformer_people_roles, row_bulk), [])
         # logger.info(f"Uploading {len(transformed_data)/2} items to ES")
         if transformed_data:
             loader_data_to_es(es, transformed_data, config.es_scheme_persons)
-            total_people += len(transformed_data)/2
-
+            total_people += len(transformed_data) / 2
 
     logger.info(f"Done with films: ({total})")
-    logger.info(f"Done with people roles: ({total_people})")    
-
+    logger.info(f"Done with people roles: ({total_people})")
 
 
 if __name__ == "__main__":

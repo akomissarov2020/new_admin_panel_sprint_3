@@ -30,13 +30,13 @@ class Settings:
     batch_size: int = 100
 
     es_address: str = os.getenv("ELASTIC_ADDRESS")
-    
+
     es_scheme_films: str = os.getenv("ELASTIC_SCHEME_FILMS")
     es_json_file_films: os.PathLike = os.environ.get("ELASTIC_JSON_FILE_FILMS")
 
     es_scheme_persons: str = os.getenv("ELASTIC_SCHEME_PERSONS")
     es_json_file_persons: os.PathLike = os.environ.get("ELASTIC_JSON_FILE_PERSONS")
-    
+
     es_scheme_genres: str = os.getenv("ELASTIC_SCHEME_GENRES")
     es_json_file_genres: os.PathLike = os.environ.get("ELASTIC_JSON_FILE_GENRES")
 
